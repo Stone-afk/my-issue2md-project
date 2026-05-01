@@ -4,3 +4,5 @@
 *.DS_Store
 /my-issue2md-project
 .claude/settings.json
+.mcp.json
+./.claude/worktrees

@@ -8,6 +8,7 @@
 @./constitution.md
 
 # 导入其他上下文文件
+@./.claude/project-map.md
 @../AGENTS.md
 @~/.claude/personal-preferences.md
 @~/.claude/contexts/golang-style.md

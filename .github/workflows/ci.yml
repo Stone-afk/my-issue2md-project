@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Setup golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          install-mode: binary
+          skip-cache: false
+
+      - name: Run tests
+        run: make test
+
+      - name: Run lint
+        run: make lint
+
+      - name: Run build
+        run: make build
+
+      - name: Diagnose CI failure with Claude Headless
+        if: ${{ failure() }}
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          additional_permissions: |
+            actions: read
+          prompt: |
+            Analyze this failed GitHub Actions CI run for the issue2md project.
+
+            Please provide:
+            1. The exact failing step or steps.
+            2. The most likely root cause based on the workflow logs.
+            3. The smallest next fix to try.
+
+            Do not modify files or open a pull request.
+          claude_args: |
+            --max-turns 3
